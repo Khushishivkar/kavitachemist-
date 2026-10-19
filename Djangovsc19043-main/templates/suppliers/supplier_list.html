@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Suppliers{% endblock %}
+{% block extra_css %}<style>body{background:#f4f6fa;}</style>{% endblock %}
+{% block content %}
+<div class="dashboard-layout">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">⚕</div>
+            <div><div class="sidebar-brand">Kavita Chemist</div><div class="sidebar-user">{{ user.get_full_name|default:user.username }}</div></div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{% url 'dashboard' %}" class="sidebar-link"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="{% url 'product_list' %}" class="sidebar-link"><i class="fas fa-pills"></i> Products</a>
+            <a href="{% url 'category_list' %}" class="sidebar-link"><i class="fas fa-tags"></i> Categories</a>
+            <a href="{% url 'supplier_list' %}" class="sidebar-link active"><i class="fas fa-truck"></i> Suppliers</a>
+            <div class="sidebar-divider"></div>
+            <a href="{% url 'logout' %}" class="sidebar-link sidebar-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </aside>
+    <main class="dashboard-main">
+        <div class="dashboard-topbar">
+            <div class="topbar-left">
+                <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+                <div><h1 class="dashboard-title">Suppliers</h1><p class="dashboard-subtitle">Manage your medicine suppliers</p></div>
+            </div>
+            <div class="topbar-right">
+                <a href="{% url 'supplier_add' %}" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Add Supplier</a>
+            </div>
+        </div>
+        <div class="data-card">
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>Supplier Name</th><th>Contact Person</th><th>Phone</th><th>Email</th><th>Products</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for sup in suppliers %}
+                        <tr>
+                            <td><strong>{{ sup.name }}</strong></td>
+                            <td>{{ sup.contact_person|default:"-" }}</td>
+                            <td>{{ sup.phone|default:"-" }}</td>
+                            <td>{{ sup.email|default:"-" }}</td>
+                            <td>{{ sup.product_count }} product{{ sup.product_count|pluralize }}</td>
+                            <td>
+                                <div class="action-btns">
+                                    <a href="{% url 'supplier_edit' sup.pk %}" class="action-btn edit" title="Edit"><i class="fas fa-edit"></i></a>
+                                    <a href="{% url 'supplier_delete' sup.pk %}" class="action-btn delete" title="Delete"><i class="fas fa-trash"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="6" class="empty-td">No suppliers yet. <a href="{% url 'supplier_add' %}">Add your first supplier</a></td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>document.getElementById('sidebarToggle').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));</script>
+{% endblock %}

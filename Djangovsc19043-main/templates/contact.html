@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}Contact{% endblock %}
+{% block content %}
+
+<section class="page-hero">
+    <div class="container">
+        <div class="page-hero-content">
+            <span class="section-tag">Get In Touch</span>
+            <h1>Contact Us</h1>
+            <p>We're here to help. Send us a message and we'll respond within 24 hours.</p>
+        </div>
+    </div>
+</section>
+
+<section class="contact-section">
+    <div class="container">
+        <div class="contact-grid">
+            <div class="contact-info">
+                <h2>Let's Talk</h2>
+                <p>Have questions about our platform? Need help getting started? Our team is ready to assist you.</p>
+                <div class="contact-details">
+                    <div class="contact-detail-item">
+                        <div class="contact-detail-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div>
+                            <h4>Address</h4>
+                            <p>123 Pharmacy Lane, Andheri West,<br>Mumbai, Maharashtra 400058</p>
+                        </div>
+                    </div>
+                    <div class="contact-detail-item">
+                        <div class="contact-detail-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div>
+                            <h4>Phone</h4>
+                            <p>+91 98765 43210</p>
+                            <p>Mon–Sat, 9am–6pm IST</p>
+                        </div>
+                    </div>
+                    <div class="contact-detail-item">
+                        <div class="contact-detail-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <h4>Email</h4>
+                            <p>info@kavitachemist.com</p>
+                            <p>support@kavitachemist.com</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-social">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="contact-form-box">
+                <h2>Send a Message</h2>
+                <form method="POST" class="contact-form">
+                    {% csrf_token %}
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>Your Name</label>
+                            <input type="text" name="name" placeholder="Full Name" required class="form-input"
+                                value="{{ form.name.value|default:'' }}">
+                            {% if form.name.errors %}<span class="form-error">{{ form.name.errors.0 }}</span>{% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" name="email" placeholder="you@email.com" required class="form-input"
+                                value="{{ form.email.value|default:'' }}">
+                            {% if form.email.errors %}<span class="form-error">{{ form.email.errors.0 }}</span>{% endif %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <input type="text" name="subject" placeholder="How can we help?" required class="form-input"
+                            value="{{ form.subject.value|default:'' }}">
+                        {% if form.subject.errors %}<span class="form-error">{{ form.subject.errors.0 }}</span>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea name="message" rows="5" placeholder="Write your message here..." required class="form-input">{{ form.message.value|default:'' }}</textarea>
+                        {% if form.message.errors %}<span class="form-error">{{ form.message.errors.0 }}</span>{% endif %}
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block extra_css %}<style>body{background:#f4f6fa;}</style>{% endblock %}
+{% block content %}
+<div class="dashboard-layout">
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">⚕</div>
+            <div>
+                <div class="sidebar-brand">Kavita Chemist</div>
+                <div class="sidebar-user">{{ user.get_full_name|default:user.username }}</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{% url 'dashboard' %}" class="sidebar-link"><i class="fas fa-th-large"></i> Dashboard</a>
+            <a href="{% url 'product_list' %}" class="sidebar-link active"><i class="fas fa-pills"></i> Products</a>
+            <a href="{% url 'category_list' %}" class="sidebar-link"><i class="fas fa-tags"></i> Categories</a>
+            <a href="{% url 'supplier_list' %}" class="sidebar-link"><i class="fas fa-truck"></i> Suppliers</a>
+            <div class="sidebar-divider"></div>
+            <a href="{% url 'logout' %}" class="sidebar-link sidebar-logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </aside>
+    <main class="dashboard-main">
+        <div class="dashboard-topbar">
+            <div class="topbar-left">
+                <button class="sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+                <div>
+                    <h1 class="dashboard-title">{{ product.name }}</h1>
+                    <p class="dashboard-subtitle">Product Details & Transaction History</p>
+                </div>
+            </div>
+            <div class="topbar-right" style="gap:8px;display:flex;">
+                <a href="{% url 'stock_transaction' product.pk %}" class="btn btn-secondary btn-sm"><i class="fas fa-exchange-alt"></i> Update Stock</a>
+                <a href="{% url 'product_edit' product.pk %}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i> Edit</a>
+                <a href="{% url 'product_list' %}" class="btn btn-ghost btn-sm"><i class="fas fa-arrow-left"></i> Back</a>
+            </div>
+        </div>
+
+        <div class="detail-grid">
+            <div class="detail-info-card">
+                <div class="detail-header">
+                    <div class="detail-product-icon"><i class="fas fa-pills"></i></div>
+                    <div>
+                        <h2>{{ product.name }}</h2>
+                        <p class="detail-brand">{{ product.brand|default:"No brand specified" }}</p>
+                        <div style="margin-top:8px;">
+                            {% if product.is_expired %}
+                                <span class="badge badge-red">Expired</span>
+                            {% elif product.is_low_stock %}
+                                <span class="badge badge-orange">Low Stock</span>
+                            {% else %}
+                                <span class="badge badge-green">In Stock</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-sections">
+                    <div class="detail-row"><span class="detail-label">Category</span><span>{{ product.category.name|default:"-" }}</span></div>
+                    <div class="detail-row"><span class="detail-label">Supplier</span><span>{{ product.supplier.name|default:"-" }}</span></div>
+                    <div class="detail-row"><span class="detail-label">Batch Number</span><span>{{ product.batch_number|default:"-" }}</span></div>
+                    <div class="detail-row"><span class="detail-label">Unit</span><span>{{ product.get_unit_display }}</span></div>
+                    <div class="detail-row"><span class="detail-label">Quantity</span><span><strong>{{ product.quantity }} {{ product.unit }}</strong></span></div>
+                    <div class="detail-row"><span class="detail-label">Min Stock Level</span><span>{{ product.min_stock_level }} {{ product.unit }}</span></div>
+                    <div class="detail-row"><span class="detail-label">Purchase Price</span><span>₹{{ product.purchase_price }}</span></div>
+                    <div class="detail-row"><span class="detail-label">Selling Price</span><span>₹{{ product.selling_price }}</span></div>
+                    <div class="detail-row"><span class="detail-label">Profit Margin</span><span class="text-green">{{ product.profit_margin|floatformat:1 }}%</span></div>
+                    <div class="detail-row"><span class="detail-label">Stock Value</span><span><strong>₹{{ product.stock_value|floatformat:2 }}</strong></span></div>
+                    <div class="detail-row"><span class="detail-label">Expiry Date</span>
+                        <span {% if product.is_expired %}class="text-red"{% endif %}>{{ product.expiry_date|date:"d M Y"|default:"Not set" }}</span>
+                    </div>
+                    <div class="detail-row"><span class="detail-label">Added On</span><span>{{ product.created_at|date:"d M Y H:i" }}</span></div>
+                    <div class="detail-row"><span class="detail-label">Last Updated</span><span>{{ product.updated_at|date:"d M Y H:i" }}</span></div>
+                </div>
+
+                {% if product.description %}
+                <div class="detail-description">
+                    <h4>Description</h4>
+                    <p>{{ product.description }}</p>
+                </div>
+                {% endif %}
+
+                <div class="detail-actions">
+                    <a href="{% url 'product_delete' product.pk %}" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Delete Product</a>
+                </div>
+            </div>
+
+            <div class="detail-txn-card">
+                <h3>Transaction History</h3>
+                <div class="transaction-list">
+                    {% for txn in transactions %}
+                    <div class="txn-item">
+                        <div class="txn-icon {% if txn.transaction_type == 'in' %}green{% elif txn.transaction_type == 'out' %}orange{% else %}blue{% endif %}">
+                            <i class="fas fa-{% if txn.transaction_type == 'in' %}arrow-down{% elif txn.transaction_type == 'out' %}arrow-up{% else %}sync{% endif %}"></i>
+                        </div>
+                        <div class="txn-info">
+                            <strong>{{ txn.get_transaction_type_display }}</strong>
+                            <small>{{ txn.created_at|date:"d M Y, H:i" }}</small>
+                            {% if txn.notes %}<small class="txn-notes">{{ txn.notes }}</small>{% endif %}
+                        </div>
+                        <div class="txn-qty {% if txn.transaction_type == 'in' %}green{% elif txn.transaction_type == 'out' %}orange{% else %}blue{% endif %}">
+                            {% if txn.transaction_type == 'in' %}+{% elif txn.transaction_type == 'out' %}-{% endif %}{{ txn.quantity }}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="empty-text">No transactions recorded yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>document.getElementById('sidebarToggle').addEventListener('click',()=>document.getElementById('sidebar').classList.toggle('open'));</script>
+{% endblock %}
